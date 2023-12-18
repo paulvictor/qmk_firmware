@@ -37,6 +37,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define PERMISSIVE_HOLD
 /* #define QUICK_TAP_TERM 0 */
 
-#define BOTH_SHIFTS_TURNS_ON_CAPS_WORD
+/* #define BOTH_SHIFTS_TURNS_ON_CAPS_WORD */
 #define CAPS_WORD_INVERT_ON_SHIFT
-#define CAPS_WORD_IDLE_TIMEOUT 2000  // 2 seconds.
+#define CAPS_WORD_IDLE_TIMEOUT 1000  // 1 seconds.
+
+#define COMBO_TERM 70
