@@ -28,12 +28,17 @@ enum custom_keycodes {
   CAPSWORD_ON = SAFE_RANGE,
 };
 
+// move quotes to where we have the c-m-x keys
+// move q to where quotes are there now but we use q a lot as well today
+// minus is used a lot so move it to a easily accessible place
+// can we interchange z and q since we do not use z as much
+
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   [_BASE] = LAYOUT(
-    KC_MINUS, KC_W, LT(_FUNCTIONS,KC_F), KC_P, KC_B,                      KC_Q, KC_U, KC_Y, KC_Z, KC_QUOTE,
-    MT(STUMP_PREFIX_MOD, KC_A), MT(MOD_LALT, KC_R), LT(_ARROWS,KC_S), MT(MOD_LSFT, KC_T),KC_G,      KC_M, MT(MOD_RSFT, KC_N), KC_E, MT(MOD_LALT, KC_I), MT(MOD_RCTL, KC_O),
-    TD(CTL_META_X), KC_X, KC_C, LT(_MOUSE,KC_D), KC_V,                    KC_DOT, KC_H, KC_J, KC_K, KC_L,
-        LT(_NUM,KC_SPACE), LT(_SYMB,KC_TAB),      MT(MOD_RSFT, KC_ENTER),KC_BSPC
+    KC_MINUS, KC_W, LT(_FUNCTIONS,KC_F), KC_P, KC_B,                      KC_Z, KC_U, KC_Y, KC_Q, KC_QUOTE,
+    LGUI_T(KC_A), MT(MOD_LALT, KC_R), LT(_ARROWS,KC_S), MT(MOD_LSFT, KC_T),KC_G,      KC_M, MT(MOD_RSFT, KC_N), KC_E, MT(MOD_LALT, KC_I), MT(MOD_RCTL, KC_O),
+    LCTL_T(KC_BSPC), KC_X, KC_C, LT(_MOUSE,KC_D), KC_V,                    KC_DOT, KC_H, KC_J, KC_K, KC_L,
+        LT(_NUM,KC_SPACE), LT(_SYMB,KC_TAB),      MT(MOD_RSFT, KC_ENTER), LCTL_T(KC_BSPC)
   ),
 
   // Can we make the number layout more optimal by using both hands ?
@@ -59,7 +64,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   [_ARROWS] = LAYOUT(
     _______, _______, _______, _______, _______,                       _______, _______, _______, _______,  _______,
     _______, _______, _______, _______, _______,                       _______, KC_LEFT,  KC_DOWN, KC_UP, KC_RIGHT,
-    _______, _______, _______, _______, _______,                       _______, _______, _______, _______,  _______,
+    _______, _______, _______, _______, _______,                       _______, KC_LEFT,  KC_DOWN, KC_UP, KC_RIGHT,
                                  _______, _______, _______, _______
   ),
   [_FUNCTIONS] = LAYOUT(
@@ -71,7 +76,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 };
 
 const uint16_t PROGMEM esc_1[] = { MT(MOD_RSFT, KC_N), KC_E, COMBO_END };
-const uint16_t PROGMEM colon_combo[] = { LT(_NUM,KC_SPACE),KC_BSPC, COMBO_END };
+const uint16_t PROGMEM colon_combo[] = { LT(_NUM,KC_SPACE),LCTL_T(KC_BSPC), COMBO_END };
 const uint16_t PROGMEM semicolon_combo[] = { LT(_SYMB,KC_TAB), MT(MOD_RSFT, KC_ENTER), COMBO_END };
 const uint16_t PROGMEM caps_combo[] = { KC_H, KC_J, COMBO_END };
 
@@ -94,7 +99,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
   return true;
 };
 
-const key_override_t delete_key_override = ko_make_basic(MOD_MASK_SHIFT, KC_BSPC, KC_DEL);
+const key_override_t delete_key_override = ko_make_basic(MOD_MASK_SHIFT, LCTL_T(KC_BSPC), KC_DEL);
 const key_override_t dot_key_override = ko_make_basic(MOD_MASK_SHIFT, KC_DOT, KC_COMMA);
 
 // This globally defines all key overrides to be used
