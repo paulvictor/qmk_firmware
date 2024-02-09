@@ -29,7 +29,7 @@ enum custom_keycodes {
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   [_BASE] = LAYOUT(
     KC_MINUS, KC_W, LT(_FUNCTIONS,KC_F), KC_P, KC_B,                                 KC_Z, KC_U, KC_Y, KC_Q, KC_QUOTE,
-    LCTL_T(KC_A), MT(MOD_LALT, KC_R), LGUI_T(KC_S), MT(MOD_LSFT, KC_T),KC_G,         KC_M, MT(MOD_RSFT, KC_N), LGUI_T(KC_E), MT(MOD_LALT, KC_I), MT(MOD_RCTL, KC_O),
+    LCTL_T(KC_A), MT(MOD_LALT, KC_R), LGUI_T(KC_S), MT(MOD_LSFT, KC_T),KC_G,         KC_M, MT(MOD_RSFT, KC_N), KC_E, MT(MOD_LALT, KC_I), MT(MOD_RCTL, KC_O),
     KC_BSPC, KC_X, KC_C, LT(_MOUSE,KC_D), KC_V,                                      KC_DOT, KC_H, KC_J, KC_K, KC_L,
         LT(_NUM,KC_SPACE), LT(_SYMB,KC_TAB),      LCA_T(KC_ENTER), LCTL_T(KC_ESCAPE)
   ),
@@ -38,7 +38,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   [_NUM] = LAYOUT(
     _______, KC_SLASH, KC_BSLS, KC_PIPE, _______,              KC_GRAVE, KC_LPRN, KC_RPRN, KC_9 , KC_PLUS,
     KC_8   , KC_7    ,  KC_6  , KC_5   , _______,                  KC_4,    KC_1,    KC_2,   KC_3,    KC_0,
-    _______, _______,  _______, _______, _______,               _______, KC_LCBR, KC_LBRC, KC_RBRC, KC_RCBR,
+    _______, _______,  _______, _______, _______,              _______, KC_LCBR, KC_LBRC, KC_RBRC, KC_RCBR,
                                      _______, _______, _______, _______
   ),
 
@@ -62,7 +62,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   )
 };
 
-const uint16_t PROGMEM esc_1[] = { MT(MOD_RSFT, KC_N), LGUI_T(KC_E), COMBO_END };
+const uint16_t PROGMEM esc_1[] = { MT(MOD_RSFT, KC_N), KC_E, COMBO_END };
 const uint16_t PROGMEM colon_combo[] = { LT(_NUM,KC_SPACE),LCTL_T(KC_ESCAPE), COMBO_END };
 const uint16_t PROGMEM semicolon_combo[] = { LT(_SYMB,KC_TAB), MT(MOD_RSFT, KC_ENTER), COMBO_END };
 const uint16_t PROGMEM caps_combo[] = { KC_H, KC_J, COMBO_END };
