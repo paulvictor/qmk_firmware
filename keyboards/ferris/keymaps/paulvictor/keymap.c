@@ -29,22 +29,27 @@ enum custom_keycodes {
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   [_BASE] = LAYOUT(
     KC_MINUS, KC_W, LT(_FUNCTIONS,KC_F), KC_P, KC_B,                                 KC_Z, KC_U, KC_Y, KC_Q, KC_QUOTE,
-    LCTL_T(KC_A), MT(MOD_LALT, KC_R), LGUI_T(KC_S), MT(MOD_LSFT, KC_T),KC_G,         KC_M, MT(MOD_RSFT, KC_N), KC_E, MT(MOD_LALT, KC_I), MT(MOD_RCTL, KC_O),
-    KC_BSPC, KC_X, KC_C, LT(_MOUSE,KC_D), KC_V,                                      KC_DOT, KC_H, KC_J, KC_K, KC_L,
-        LT(_NUM,KC_SPACE), LT(_SYMB,KC_TAB),      LCA_T(KC_ENTER), LCTL_T(KC_ESCAPE)
+    LGUI_T(KC_A), MT(MOD_LALT, KC_R), KC_S, MT(MOD_LSFT, KC_T),KC_G,         KC_M, MT(MOD_RSFT, KC_N), KC_E, MT(MOD_LALT, KC_I), MT(MOD_RCTL, KC_O),
+    //Two representations of DOT are there. Can we make the right one as backspace.
+    // Move dot to the left corner because we have unbound S-.
+    // Use tap dance to have C-x / ctrl for LCTL_T(KC_BSPC)
+    // Use backspace where we have right dot now
+    LCTL_T(KC_BSPC), KC_X, KC_C, LT(_MOUSE,KC_D), KC_V,                                      KC_DOT, KC_H, KC_J, KC_K, KC_L,
+        LT(_NUM,KC_SPACE), LT(_SYMB,KC_TAB),      LCA_T(KC_ENTER), LCTL_T(KC_BSPC)
   ),
 
   // Can we make the number layout more optimal by using both hands ?
+  // Tried, not optimal
   [_NUM] = LAYOUT(
-    _______, KC_SLASH, KC_BSLS, KC_PIPE, _______,              KC_GRAVE, KC_LPRN, KC_RPRN, KC_9 , KC_PLUS,
-    KC_8   , KC_7    ,  KC_6  , KC_5   , _______,                  KC_4,    KC_1,    KC_2,   KC_3,    KC_0,
-    _______, _______,  _______, _______, _______,              _______, KC_LCBR, KC_LBRC, KC_RBRC, KC_RCBR,
+    _______, KC_SLASH, KC_BSLS, KC_PIPE, _______,              KC_GRAVE, KC_4, KC_5, KC_6, KC_PLUS,
+    KC_LABK, KC_LPRN , KC_RPRN, KC_RABK, _______,              KC_QUES,  KC_1, KC_2, KC_3,    KC_0,
+    KC_LCBR, KC_LBRC , KC_RBRC, KC_RCBR, _______,              _______,  KC_7, KC_8, KC_9, KC_EQUAL,
                                      _______, _______, _______, _______
   ),
 
   [_SYMB] = LAYOUT(
-    _______, _______, _______, _______, _______,               KC_TILD, KC_LABK, KC_RABK, KC_QUES, KC_EQUAL,
-    KC_ASTR, KC_AMPR, KC_CIRC, KC_PERC, _______,               KC_DLR,  KC_EXLM, KC_AT,   KC_HASH, _______,
+    _______, _______, _______, _______, _______,               KC_TILD, KC_DLR, KC_PERC, KC_CIRC, _______,
+    _______, _______, _______, _______, _______,               KC_AMPR, KC_EXLM, KC_AT,   KC_HASH, KC_ASTR,
     _______, _______, _______, _______, _______,               _______, KC_LEFT, KC_DOWN, KC_UP  , KC_RIGHT,
                                   _______, _______, _______, _______
   ),
@@ -63,7 +68,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 };
 
 const uint16_t PROGMEM esc_1[] = { MT(MOD_RSFT, KC_N), KC_E, COMBO_END };
-const uint16_t PROGMEM colon_combo[] = { LT(_NUM,KC_SPACE),LCTL_T(KC_ESCAPE), COMBO_END };
+const uint16_t PROGMEM colon_combo[] = { LT(_NUM,KC_SPACE), LCTL_T(KC_BSPC), COMBO_END };
 const uint16_t PROGMEM semicolon_combo[] = { LT(_SYMB,KC_TAB), LCA_T(KC_ENTER), COMBO_END };
 const uint16_t PROGMEM caps_combo[] = { KC_H, KC_J, COMBO_END };
 
@@ -85,7 +90,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
   return true;
 };
 
-const key_override_t delete_key_override = ko_make_basic(MOD_MASK_SHIFT, KC_BSPC, KC_DEL);
+const key_override_t delete_key_override = ko_make_basic(MOD_MASK_SHIFT, LCTL_T(KC_BSPC), KC_DEL);
 const key_override_t dot_key_override = ko_make_basic(MOD_MASK_SHIFT, KC_DOT, KC_COMMA);
 
 // This globally defines all key overrides to be used
