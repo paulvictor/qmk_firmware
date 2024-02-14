@@ -64,7 +64,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
 const uint16_t PROGMEM esc_1[] = { MT(MOD_RSFT, KC_N), KC_E, COMBO_END };
 const uint16_t PROGMEM colon_combo[] = { LT(_NUM,KC_SPACE),LCTL_T(KC_ESCAPE), COMBO_END };
-const uint16_t PROGMEM semicolon_combo[] = { LT(_SYMB,KC_TAB), MT(MOD_RSFT, KC_ENTER), COMBO_END };
+const uint16_t PROGMEM semicolon_combo[] = { LT(_SYMB,KC_TAB), LCA_T(KC_ENTER), COMBO_END };
 const uint16_t PROGMEM caps_combo[] = { KC_H, KC_J, COMBO_END };
 
 combo_t key_combos[] = {
@@ -85,7 +85,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
   return true;
 };
 
-const key_override_t delete_key_override = ko_make_basic(MOD_MASK_SHIFT, LCTL_T(KC_BSPC), KC_DEL);
+const key_override_t delete_key_override = ko_make_basic(MOD_MASK_SHIFT, KC_BSPC, KC_DEL);
 const key_override_t dot_key_override = ko_make_basic(MOD_MASK_SHIFT, KC_DOT, KC_COMMA);
 
 // This globally defines all key overrides to be used
