@@ -37,6 +37,7 @@ typedef struct {
 
 enum tap_dances {
   CTL_META_X = 0,
+  SUPER_CTL_X,
   MAX_TAP_DANCE
 };
 
@@ -47,13 +48,11 @@ enum custom_keycodes {
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   [_BASE] = LAYOUT(
     KC_MINUS, KC_W, LT(_FUNCTIONS,KC_F), KC_P, KC_B,                                 KC_Z, KC_U, KC_Y, KC_Q, KC_QUOTE,
-    LGUI_T(KC_A), MT(MOD_LALT, KC_R), KC_S, MT(MOD_LSFT, KC_T),KC_G,         KC_M, MT(MOD_RSFT, KC_N), KC_E, MT(MOD_LALT, KC_I), MT(MOD_RCTL, KC_O),
-    LCTL_T(KC_DOT), KC_X, KC_C, LT(_MOUSE,KC_D), KC_V,                                      KC_BSPC, KC_H, KC_J, KC_K, KC_L,
-                     LT(_NUM,KC_SPACE), LT(_SYMB,KC_TAB),      LCA_T(KC_ENTER), TD(CTL_META_X)
+    TD(SUPER_CTL_X), MT(MOD_LALT, KC_R), KC_S, MT(MOD_LSFT, KC_T),KC_G,         KC_M, MT(MOD_RSFT, KC_N), KC_E, MT(MOD_LALT, KC_I), MT(MOD_RCTL, KC_O),
+    TD(CTL_META_X), KC_X, KC_C, LT(_MOUSE,KC_D), KC_V,                                      KC_DOT, KC_H, KC_J, KC_K, KC_L,
+                     LT(_NUM,KC_SPACE), LT(_SYMB,KC_TAB),      LCA_T(KC_ENTER), KC_BSPC
   ),
 
-  // Can we make the number layout more optimal by using both hands ?
-  // Tried, not optimal
   [_NUM] = LAYOUT(
     _______, KC_SLASH, KC_BSLS, KC_PIPE, _______,              KC_GRAVE, KC_4, KC_5, KC_6, KC_PLUS,
     KC_LABK, KC_LPRN , KC_RPRN, KC_RABK, _______,              KC_QUES,  KC_1, KC_2, KC_3,    KC_0,
@@ -82,7 +81,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 };
 
 const uint16_t PROGMEM esc_1[] = { MT(MOD_RSFT, KC_N), KC_E, COMBO_END };
-const uint16_t PROGMEM colon_combo[] = { LT(_NUM,KC_SPACE), TD(CTL_META_X), COMBO_END };
+const uint16_t PROGMEM colon_combo[] = { LT(_NUM,KC_SPACE), KC_BSPC, COMBO_END };
 const uint16_t PROGMEM semicolon_combo[] = { LT(_SYMB,KC_TAB), LCA_T(KC_ENTER), COMBO_END };
 const uint16_t PROGMEM caps_combo[] = { KC_H, KC_J, COMBO_END };
 
@@ -205,6 +204,42 @@ void cmx_reset(tap_dance_state_t *state, void *user_data) {
     cmx_tap_state.state = TD_NONE;
 }
 
+static td_tap_t sca_tap_state = {
+    .is_press_action = true,
+    .state = TD_NONE
+};
+
+void sca_finished(tap_dance_state_t *state, void *user_data) {
+  sca_tap_state.state = cur_dance(state);
+  switch (sca_tap_state.state) {
+  case TD_SINGLE_TAP: register_code16(KC_A); break;
+  case TD_SINGLE_HOLD: register_code16(KC_LCTL); break;
+  case TD_DOUBLE_HOLD: register_code16(KC_LGUI); break;
+    // Last case is for fast typing. Assuming your key is `f`:
+    // For example, when typing the word `buffer`, and you want to make sure that you send `ff` and not `Esc`.
+    // In order to type `ff` when typing fast, the next character will have to be hit within the `TAPPING_TERM`, which by default is 200ms.
+  case TD_DOUBLE_SINGLE_TAP: tap_code16(KC_A);register_code16(KC_A); break;
+  case TD_DOUBLE_TAP: tap_code16(KC_A);register_code16(KC_A); break;
+  default: break;
+  }
+}
+
+void sca_reset(tap_dance_state_t *state, void *user_data) {
+  switch (sca_tap_state.state) {
+  case TD_SINGLE_TAP: unregister_code16(KC_A); break;
+  case TD_SINGLE_HOLD: unregister_code16(KC_LCTL); break;
+  case TD_DOUBLE_HOLD: unregister_code16(KC_LGUI); break;
+    // Last case is for fast typing. Assuming your key is `f`:
+    // For example, when typing the word `buffer`, and you want to make sure that you send `ff` and not `Esc`.
+    // In order to type `ff` when typing fast, the next character will have to be hit within the `TAPPING_TERM`, which by default is 200ms.
+  case TD_DOUBLE_SINGLE_TAP: unregister_code16(KC_A); break;
+  case TD_DOUBLE_TAP: unregister_code16(KC_A); break;
+  default: break;
+  }
+  sca_tap_state.state = TD_NONE;
+}
+
 tap_dance_action_t tap_dance_actions[] = {
-    [CTL_META_X] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, cmx_finished, cmx_reset)
+  [CTL_META_X] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, cmx_finished, cmx_reset),
+  [SUPER_CTL_X] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, sca_finished, sca_reset)
 };
