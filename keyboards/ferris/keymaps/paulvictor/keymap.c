@@ -1,10 +1,5 @@
 #include QMK_KEYBOARD_H
 
-// Each layer gets a name for readability, which is then used in the keymap matrix below.
-// The underscores don't mean anything - you can have a layer called STUFF or any other name.
-// Layer names don't all need to be of the same length, obviously, and you can also skip them
-// entirely and just use numbers.
-
 #define ALT_X LALT(KC_X)
 #define STUMP_PREFIX_MOD (MOD_LGUI)
 
@@ -30,14 +25,9 @@ typedef enum {
     TD_TRIPLE_HOLD
 } td_state_t;
 
-typedef struct {
-    bool is_press_action;
-    td_state_t state;
-} td_tap_t;
-
 enum tap_dances {
   CTL_META_X = 0,
-  SUPER_CTL_X,
+/*   SUPER_CTL_X, */
   MAX_TAP_DANCE
 };
 
@@ -48,7 +38,7 @@ enum custom_keycodes {
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   [_BASE] = LAYOUT(
     KC_MINUS, KC_W, LT(_FUNCTIONS,KC_F), KC_P, KC_B,                                 KC_Z, KC_U, KC_Y, KC_Q, KC_QUOTE,
-    TD(SUPER_CTL_X), MT(MOD_LALT, KC_R), KC_S, MT(MOD_LSFT, KC_T),KC_G,         KC_M, MT(MOD_RSFT, KC_N), KC_E, MT(MOD_LALT, KC_I), MT(MOD_RCTL, KC_O),
+    LGUI_T(KC_A), MT(MOD_LALT, KC_R), KC_S, MT(MOD_LSFT, KC_T),KC_G,         KC_M, MT(MOD_RSFT, KC_N), KC_E, MT(MOD_LALT, KC_I), MT(MOD_RCTL, KC_O),
     TD(CTL_META_X), KC_X, KC_C, LT(_MOUSE,KC_D), KC_V,                                      KC_DOT, KC_H, KC_J, KC_K, KC_L,
                      LT(_NUM,KC_SPACE), LT(_SYMB,KC_TAB),      LCA_T(KC_ENTER), KC_BSPC
   ),
@@ -117,7 +107,6 @@ const key_override_t **key_overrides = (const key_override_t *[]){
 
 td_state_t cur_dance(tap_dance_state_t *state);
 
-// For the x tap dance. Put it here so it can be used in any keymap
 void cmx_finished(tap_dance_state_t *state, void *user_data);
 void cmx_reset(tap_dance_state_t *state, void *user_data);
 
@@ -161,6 +150,8 @@ td_state_t cur_dance(tap_dance_state_t *state) {
         else if (state->pressed) return TD_DOUBLE_HOLD;
         else return TD_DOUBLE_TAP;
     }
+    // Exit if none of these
+    return TD_UNKNOWN;
 
     // Assumes no one is trying to type the same letter three times (at least not quickly).
     // If your tap dance key is 'KC_W', and you want to type "www." quickly - then you will need to add
@@ -171,75 +162,61 @@ td_state_t cur_dance(tap_dance_state_t *state) {
     } else return TD_UNKNOWN;
 }
 
-// Create an instance of 'td_tap_t' for the tap dance.
-static td_tap_t cmx_tap_state = {
-    .is_press_action = true,
-    .state = TD_NONE
-};
+static td_state_t cmx_td_state;
+static td_state_t sca_td_state;
 
 void cmx_finished(tap_dance_state_t *state, void *user_data) {
-    cmx_tap_state.state = cur_dance(state);
-    switch (cmx_tap_state.state) {
-        case TD_SINGLE_TAP: register_code16(LCTL(KC_X)); break;
-        case TD_SINGLE_HOLD: register_code16(KC_LCTL); break;
-        case TD_DOUBLE_TAP: register_code16(LALT(KC_X)); break;
-        case TD_DOUBLE_HOLD: tap_code16(LCTL(KC_X));register_code16(KC_LCTL); break;
-        // Last case is for fast typing. Assuming your key is `f`:
-        // For example, when typing the word `buffer`, and you want to make sure that you send `ff` and not `Esc`.
-        // In order to type `ff` when typing fast, the next character will have to be hit within the `TAPPING_TERM`, which by default is 200ms.
-        case TD_DOUBLE_SINGLE_TAP: register_code16(LALT(KC_X)); break;
-        default: break;
-    }
-}
-
-void cmx_reset(tap_dance_state_t *state, void *user_data) {
-  switch (cmx_tap_state.state) {
-        case TD_SINGLE_TAP: unregister_code16(LCTL(KC_X)); break;
-        case TD_SINGLE_HOLD: unregister_code16(KC_LCTL); break;
-        case TD_DOUBLE_TAP: unregister_code16(LALT_T(KC_X)); break;
-        case TD_DOUBLE_HOLD: unregister_code16(KC_LCTL); break;
-        case TD_DOUBLE_SINGLE_TAP: unregister_code16(LALT(KC_X)); break;
-        default: break;
-    }
-    cmx_tap_state.state = TD_NONE;
-}
-
-static td_tap_t sca_tap_state = {
-    .is_press_action = true,
-    .state = TD_NONE
-};
-
-void sca_finished(tap_dance_state_t *state, void *user_data) {
-  sca_tap_state.state = cur_dance(state);
-  switch (sca_tap_state.state) {
-  case TD_SINGLE_TAP: register_code16(KC_A); break;
+  cmx_td_state = cur_dance(state);
+  switch (cmx_td_state) {
+  case TD_SINGLE_TAP: register_code16(LCTL(KC_X)); break;
   case TD_SINGLE_HOLD: register_code16(KC_LCTL); break;
-  case TD_DOUBLE_HOLD: register_code16(KC_LGUI); break;
+  case TD_DOUBLE_TAP: register_code16(LALT(KC_X)); break;
+  case TD_DOUBLE_HOLD: tap_code16(LCTL(KC_X));register_code16(KC_LCTL); break;
     // Last case is for fast typing. Assuming your key is `f`:
     // For example, when typing the word `buffer`, and you want to make sure that you send `ff` and not `Esc`.
     // In order to type `ff` when typing fast, the next character will have to be hit within the `TAPPING_TERM`, which by default is 200ms.
-  case TD_DOUBLE_SINGLE_TAP: tap_code16(KC_A);register_code16(KC_A); break;
+  case TD_DOUBLE_SINGLE_TAP: register_code16(LALT(KC_X)); break;
+  default: break;
+  }
+}
+
+void cmx_reset(tap_dance_state_t *state, void *user_data) {
+  switch (cmx_td_state) {
+  case TD_SINGLE_TAP: unregister_code16(LCTL(KC_X)); break;
+  case TD_SINGLE_HOLD: unregister_code16(KC_LCTL); break;
+  case TD_DOUBLE_TAP: unregister_code16(LALT_T(KC_X)); break;
+  case TD_DOUBLE_HOLD: unregister_code16(KC_LCTL); break;
+  case TD_DOUBLE_SINGLE_TAP: unregister_code16(LALT(KC_X)); break;
+  default: break;
+  }
+  cmx_td_state = TD_NONE;
+}
+
+void sca_finished(tap_dance_state_t *state, void *user_data) {
+  sca_td_state = cur_dance(state);
+  switch (sca_td_state) {
+  case TD_SINGLE_TAP: register_code16(KC_A); break;
+  case TD_SINGLE_HOLD: register_code16(KC_LGUI); break;
   case TD_DOUBLE_TAP: tap_code16(KC_A);register_code16(KC_A); break;
+  case TD_DOUBLE_HOLD: register_code16(KC_LCTL); break;
+  case TD_DOUBLE_SINGLE_TAP: tap_code16(KC_A);register_code16(KC_A); break;
   default: break;
   }
 }
 
 void sca_reset(tap_dance_state_t *state, void *user_data) {
-  switch (sca_tap_state.state) {
+  switch (sca_td_state) {
   case TD_SINGLE_TAP: unregister_code16(KC_A); break;
-  case TD_SINGLE_HOLD: unregister_code16(KC_LCTL); break;
-  case TD_DOUBLE_HOLD: unregister_code16(KC_LGUI); break;
-    // Last case is for fast typing. Assuming your key is `f`:
-    // For example, when typing the word `buffer`, and you want to make sure that you send `ff` and not `Esc`.
-    // In order to type `ff` when typing fast, the next character will have to be hit within the `TAPPING_TERM`, which by default is 200ms.
+  case TD_SINGLE_HOLD: unregister_code16(KC_LGUI); break;
+  case TD_DOUBLE_HOLD: unregister_code16(KC_LCTL); break;
   case TD_DOUBLE_SINGLE_TAP: unregister_code16(KC_A); break;
   case TD_DOUBLE_TAP: unregister_code16(KC_A); break;
   default: break;
   }
-  sca_tap_state.state = TD_NONE;
+  sca_td_state = TD_NONE;
 }
 
 tap_dance_action_t tap_dance_actions[] = {
-  [CTL_META_X] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, cmx_finished, cmx_reset),
-  [SUPER_CTL_X] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, sca_finished, sca_reset)
+  [CTL_META_X] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, cmx_finished, cmx_reset)
+/*   , [SUPER_CTL_X] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, sca_finished, sca_reset) */
 };
