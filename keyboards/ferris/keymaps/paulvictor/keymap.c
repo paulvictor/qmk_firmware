@@ -45,8 +45,8 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
   [_NUM] = LAYOUT(
     _______, KC_SLASH, KC_BSLS, KC_PIPE, _______,              KC_GRAVE, KC_4, KC_5, KC_6, KC_PLUS,
-    KC_LABK, KC_LPRN , KC_RPRN, KC_RABK, _______,              KC_QUES,  KC_1, KC_2, KC_3,    KC_0,
-    KC_LCBR, KC_LBRC , KC_RBRC, KC_RCBR, _______,              _______,  KC_7, KC_8, KC_9, KC_EQUAL,
+    KC_LABK, KC_LBRC , KC_RBRC, KC_RABK, _______,              KC_QUES,  KC_1, KC_2, KC_3,    KC_0,
+    KC_LCBR, KC_LPRN , KC_RPRN, KC_RCBR, _______,              _______,  KC_7, KC_8, KC_9, KC_EQUAL,
                                      _______, _______, _______, _______
   ),
 
@@ -97,10 +97,9 @@ const key_override_t delete_key_override = ko_make_basic(MOD_MASK_SHIFT, KC_BSPC
 const key_override_t dot_key_override = ko_make_basic(MOD_MASK_SHIFT, KC_DOT, KC_COMMA);
 
 // This globally defines all key overrides to be used
-const key_override_t **key_overrides = (const key_override_t *[]){
+const key_override_t *key_overrides[] = {
 	&delete_key_override,
   &dot_key_override,
-	NULL // Null terminate the array of overrides!
 };
 
 // For tap dance
